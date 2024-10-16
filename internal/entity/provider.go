@@ -20,6 +20,21 @@ type ProviderInterface interface {
 	Delete() error
 }
 
+type Instance struct {
+	ID                string
+	Name              string
+	Status            string
+	Image             string
+	Region            string
+	Zone              string
+	Tier              string
+	Spot              bool
+	Disks             interface{}
+	NetworkInterfaces interface{}
+	CreationTimestamp string
+	Tags              map[string]string
+}
+
 func (p *Provider) isValid() error {
 	if p.Name == "" {
 		return errors.New("invalid name")
