@@ -41,11 +41,29 @@ func (g GCPProvider) ListInstances(w io.Writer, accountID string) ([]entity.Reso
 			return nil, fmt.Errorf("failed to list instances: %v", err)
 		}
 
+		isSpot := false
+		if *instance.GetScheduling().ProvisioningModel == "STANDARD" {
+			isSpot = true
+		}
+
 		resource := entity.Resource{
 			ID:   strconv.FormatUint(instance.GetId(), 10),
 			Name: instance.GetName(),
 			Type: "GCP Instance",
-			Spec: instance,
+			Spec: entity.Instance{
+				ID:                strconv.FormatUint(instance.GetId(), 10),
+				Name:              instance.GetName(),
+				Status:            instance.GetStatus(),
+				Image:             instance.GetSourceMachineImage(),
+				Region:            instance.GetZone(),
+				Zone:              instance.GetZone(),
+				Tier:              instance.GetMachineType(),
+				Spot:              isSpot,
+				Disks:             instance.GetDisks(),
+				NetworkInterfaces: instance.GetNetworkInterfaces(),
+				Tags:              instance.GetLabels(),
+				CreationTimestamp: *instance.CreationTimestamp,
+			},
 		}
 		resources = append(resources, resource)
 		fmt.Fprintf(w, "Instance found: %s\n", instance.GetName())
