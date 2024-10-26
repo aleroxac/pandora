@@ -19,12 +19,17 @@ type InventoryInterface interface {
 	Delete() error
 }
 
+var (
+	ErrInvalidInventoryName      = errors.New("invalid name")
+	ErrInvalidInventoryProviders = errors.New("invalid providers")
+)
+
 func (i *Inventory) IsValid() error {
 	if i.Name == "" {
-		return errors.New("invalid name")
+		return ErrInvalidInventoryName
 	}
 	if len(i.Providers) == 0 {
-		return errors.New("invalid providers")
+		return ErrInvalidInventoryProviders
 	}
 	return nil
 }
